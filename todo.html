@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script src="tool.js"></script>
+	<style>
+		.class-done{
+			text-decoration: line-through
+		}
+	</style>
+</head>
+<body>
+	
+		<div class="todo-form">
+			<input 	id ="id-inpute" type="text">
+			<button id="id-button">Add</button>
+		</div>
+	<div id="id-div-container">	
+		<div id="id-div-cell">
+			<!--<button class="class-done">完成</button>
+			<button class="class-delete">删除</button>
+			<span class="todo-content" contenteditable="true">上课</span> -->
+		</div>
+	</div>
+	
+</body>
+<script>
+	
+	var e1 = e('#id-button')
+	var c1 = e('#id-div-container')	
+	
+	bindEvent(e1,'click',function(){
+		var todoInput = e('#id-inpute')		
+		var value = todoInput.value
+		var t = `
+		<div id="id-div-cell">
+			<button class="class-done">完成</button>
+			<button class="class-delete">删除</button>
+			<span class="todo-content" contenteditable="true">${value}</span>
+		</div>`
+		c1.insertAdjacentHTML('beforeend',t)
+		saveTodos()
+	})
+
+	bindEvent(c1,'click',function(target){	
+		var target = event.target
+		//console.log(target)
+		var parent = target.parentElement 
+		//console.log(parent)
+		if(target.classList.contains("class-delete")){
+			parent.remove()
+		}
+		else if(target.classList.contains("class-done")){
+			toggleClass(parent,"class-done")
+		}
+		saveTodos()
+	})
+
+
+	var toggleClass = function(element, className) {
+    // 检查元素是否拥有某个 classs
+    if (element.classList.contains(className)) {
+        // 拥有则删除之
+        element.classList.remove(className)
+    } else {
+        // 没有则加上
+        element.classList.add(className)
+    }
+}
+	
+	var save = function(array) {
+    	var s = JSON.stringify(array)
+    	log('s',s)
+    	localStorage.todos = s
+    	log('localStorage.todos',localStorage.todos)
+}
+
+// 定义一个函数， 读取 localStorage 中的数据并解析返回
+	var load = function() {
+	    var s = localStorage.todos
+	    return JSON.parse(s)
+	}
+	var saveTodos = function() {
+    // 1 先选出所有的 content 标签
+    // 2 取出 todo
+    // 3 添加到一个 数组中
+    // 4 保存数组
+    log('save todos')
+    var contents = document.querySelectorAll('.todo-content')
+    var todos = []
+    for (var i = 0; i < contents.length; i++) {
+        var c = contents[i]
+        var done = c.parentElement.classList.contains('class-done')
+        var todo = {
+            content: c.innerHTML,
+        }
+        log('c.innerHTML',c.innerHTML)
+        // 添加到数组中
+        //log('todo',todo)
+        todos.push(todo)
+        //log('todos',todos)
+    }
+    // 保存数组
+    save(todos)
+}
+	var loadTodos = function() {
+    	var todos = load()
+    	log('load todos', todos)
+    // 添加到页面中
+   		 for (var i = 0; i < todos.length; i++) {
+	        var todo = todos[i]	      	
+			var value = todo.content
+			log('value',value)
+			var t = `
+			<div id="id-div-cell">
+				<button class="class-done">完成</button>
+				<button class="class-delete">删除</button>
+				<span class="todo-content" contenteditable="true">${value}</span>
+			</div>`
+			c1.insertAdjacentHTML('beforeend',t)
+    }
+}
+
+loadTodos()
+</script>
+</html>
